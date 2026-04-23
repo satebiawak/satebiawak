@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trekker Shop - Gear Up for Adventure</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        :root {
+            --primary: #e67e22;
+            --dark: #1a1a1a;
+            --bg-cream: #fdf7f2;
+            --white: #ffffff;
+            --grey: #666;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        
+        body { background-color: var(--bg-cream); color: var(--dark); overflow-x: hidden; }
+
+        /* --- NAVBAR --- */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+.navbar { padding: 20px 0; }
+.nav-container { display: flex; justify-content: space-between; align-items: center; }
+.logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; }
+.logo i { color: #e67e22; transform: rotate(-15deg); }
+.nav-links { display: flex; gap: 30px; }
+.nav-links a { text-decoration: none; color: #555; font-size: 14px; font-weight: 500; }
+.actions { display: flex; align-items: center; gap: 20px; }
+.signin-btn { background: #000; color: #fff; padding: 10px 25px; border-radius: 25px; border: none; cursor: pointer; }
+
+/* --- MODAL / POPUP STYLING --- */
+.modal-overlay { 
+    display: none; /* Awalnya sembunyi, muncul via JS */
+    position: fixed; 
+    top: 0; left: 0; 
+    width: 100%; height: 100%; 
+    background: rgba(0,0,0,0.6); 
+    z-index: 2000; 
+    align-items: center; 
+    justify-content: center; 
+}
+.modal-box { 
+    position: relative; 
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 400px; 
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.btn-close { 
+    position: absolute; 
+    top: 15px; right: 20px; 
+    font-size: 25px; 
+    cursor: pointer; 
+    color: #888;
+}
+
+/* Styling Khusus Login/Signup Form */
+.login-header { 
+    text-align: center; 
+    margin-bottom: 2rem; 
+}
+
+.login-header h2 { 
+    font-size: 24px; 
+    margin-top: 10px; 
+    color: #1a1a1a;
+}
+
+.form-group { 
+    text-align: left; 
+    margin-bottom: 1.2rem; 
+}
+
+.form-group label { 
+    display: block; 
+    font-size: 0.9rem; 
+    font-weight: 600; 
+    margin-bottom: 0.5rem; 
+    color: #333; 
+}
+
+.form-group input { 
+    width: 100%; 
+    padding: 0.8rem; 
+    border: 1px solid #ddd; 
+    border-radius: 8px; 
+    outline: none; 
+    transition: 0.3s; /* Biar halus pas diklik */
+}
+
+.form-group input:focus { 
+    border-color: #e67e22; 
+    box-shadow: 0 0 5px rgba(230, 126, 34, 0.2); /* Efek glow tipis */
+}
+
+.login-options { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    font-size: 0.85rem; 
+    margin-bottom: 1.5rem; 
+}
+
+.login-btn { 
+    width: 100%; 
+    padding: 0.8rem; 
+    font-weight: bold; 
+    background: #e67e22; 
+    color: #fff; 
+    border: none; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    transition: 0.3s ease; /* Biar mantul pas dipencet */
+}
+
+/* Efek pas kursor di atas tombol */
+.login-btn:hover {
+    background: #d35400; 
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(230, 126, 34, 0.3);
+}
+
+/* Efek pas tombol diklik beneran */
+.login-btn:active {
+    transform: scale(0.98);
+}
+
+.signup-link { 
+    text-align: center; 
+    font-size: 0.9rem; 
+    margin-top: 1.5rem; 
+}
+
+.signup-link a { 
+    color: #e67e22; 
+    font-weight: bold; 
+    text-decoration: none; 
+    transition: 0.3s;
+}
+
+        .cart-icon {
+            position: relative;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            background: var(--primary);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 50%;
+        }
+
+        /* --- SHOP HERO --- */
+        .shop-hero {
+            padding: 60px 8% 40px;
+            text-align: center;
+        }
+
+        .shop-hero h1 { font-size: 3rem; font-weight: 800; margin-bottom: 10px; }
+        .shop-hero p { color: var(--grey); font-size: 1.1rem; }
+
+        /* --- PRODUCT GRID --- */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            padding: 0 8% 80px;
+        }
+
+        .product-card {
+            background: var(--white);
+            border-radius: 25px;
+            padding: 20px;
+            position: relative;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(0,0,0,0.03);
+            text-align: center;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .product-img {
+            width: 100%;
+            height: 250px;
+            object-fit: contain;
+            margin-bottom: 20px;
+            transition: 0.3s;
+        }
+
+        .product-card:hover .product-img { transform: scale(1.05); }
+
+        .discount-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #e74c3c;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .product-info h3 { font-size: 1.2rem; margin-bottom: 10px; }
+        .price { font-size: 1.3rem; font-weight: 800; color: var(--primary); margin-bottom: 20px; }
+        .price span { font-size: 0.9rem; text-decoration: line-through; color: var(--grey); margin-right: 10px; }
+
+        .add-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--dark);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .add-btn:hover { background: var(--primary); }
+        .add-btn:active { transform: scale(0.95); }
+
+        /* --- SIDEBAR CART --- */
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 350px;
+            height: 100%;
+            background: var(--white);
+            z-index: 2000;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+            transition: 0.4s;
+            padding: 40px 30px;
+        }
+
+        .cart-sidebar.active { right: 0; }
+
+        .cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .cart-item { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+
+        @media (max-width: 600px) {
+            .cart-sidebar { width: 100%; }
+        }
+        /* --- FOOTER --- */
+.main-footer { background-color: #fdf6f0; padding-top: 80px; }
+.footer-layout { display: grid; grid-template-columns: 1.5fr repeat(4, 1fr); gap: 30px; padding-bottom: 60px; }
+.footer-logo { display: flex; align-items: center; gap: 10px; font-weight: 800; margin-bottom: 20px; }
+.footer-logo i { color: #e67e22; }
+
+.social-icons { display: flex; gap: 8px; margin-top: 15px; }
+.social-icons a { width: 35px; height: 35px; background: #000; color: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 14px; }
+
+.footer-col-links h3 { font-size: 16px; margin-bottom: 20px; }
+.footer-col-links ul { list-style: none; }
+.footer-col-links li { margin-bottom: 12px; color: #555; font-size: 14px; cursor: pointer; }
+
+.footer-bottom {
+    width: 100%;
+    text-align: center; /* Mengetengahkan teks */
+    padding: 20px 0;    /* Memberi ruang atas dan bawah */
+    border-top: 1px solid #ddd; /* Garis tipis opsional untuk pemisah */
+    margin-top: 30px;
+    background: #000;
+    color: #fff;
+}
+
+.footer-bottom .container {
+    display: flex;
+    justify-content: center; /* Memastikan konten container tetap di tengah */
+    align-items: center;
+}
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <header class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <i class="bi bi-send-fill"></i>
+                <span>GLOBE TREKKER</span>
+            </div>
+            <nav class="nav-links">
+                <a href="destination.html">Destination</a>
+                <a href="travelplan.html">Travel plan</a>
+                <a href="inspiration.html">Inspiration</a>
+                <a href="shop.html">Shop</a>
+                <a href="blog.html">Blog</a>
+            </nav>
+            <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search destination...">
+    <i class="bi bi-search" id="searchBtn" onclick="toggleSearch()"></i>
+</div>
+            <div class="actions">
+                <button class="signin-btn" onclick="openLogin()">Sign in</button>
+            </div>
+            <div id="loginPopup" class="modal-overlay">
+    <div class="modal-box login-card">
+        <span class="btn-close" onclick="closeLogin()">&times;</span>
+        
+        <div class="login-header">
+            <i class="bi bi-send-fill" style="color: #e67e22; font-size: 2rem;"></i>
+            <h2>Welcome Back</h2>
+            <p>Please enter your details to sign in</p>
+        </div>
+
+        <form onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" placeholder="name@example.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" placeholder="••••••••" required>
+            </div>
+
+            <div class="login-options">
+                <label><input type="checkbox"> Remember me</label>
+                <a href="javascript:void(0)" onclick="openForgot()">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="cta-btn login-btn">Sign In</button>
+            
+            <p class="signup-link">
+    Don't have an account? 
+    <a href="javascript:void(0)" onclick="openSignUp()">Sign up for free</a>
+</p>
+        </form>
+    </div>
+</div>
+
+<div id="forgotPopup" class="modal-overlay">
+    <div class="modal-box login-card">
+        <span class="btn-close" onclick="closeForgot()">&times;</span>
+        <div class="login-header">
+            <i class="bi bi-shield-lock" style="color: #e67e22; font-size: 2.5rem;"></i>
+            <h2>Reset Password</h2>
+            <p>Enter your email and we'll send you a link to reset your password.</p>
+        </div>
+        <form onsubmit="handleForgot(event)">
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" placeholder="name@example.com" required>
+            </div>
+            <button type="submit" class="cta-btn login-btn">Send Reset Link</button>
+            <p class="signup-link">Remember your password? <a href="javascript:void(0)" onclick="openLogin(); closeForgot();">Back to Login</a></p>
+        </form>
+    </div>
+</div>
+
+<div id="signupPopup" class="modal-overlay">
+    <div class="modal-box login-card">
+        <span class="btn-close" onclick="closeSignUp()">&times;</span>
+        <div class="login-header">
+            <h2>Create Account</h2>
+            <p>Join the Globe Trekker community</p>
+        </div>
+        <form onsubmit="handleSignUp(event)">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" placeholder="Your Name" required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" placeholder="name@example.com" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" placeholder="Create password" required>
+            </div>
+            <button type="submit" class="cta-btn login-btn">Sign Up</button>
+            <p class="signup-link">Already have an account? <a href="javascript:void(0)" onclick="openLogin(); closeSignUp();">Sign In</a></p>
+        </form>
+    </div>
+</div>
+
+<div class="cart-icon" onclick="toggleCart()">
+            <i class="bi bi-bag-heart-fill"></i>
+            <span class="cart-count" id="count">0</span>
+        </div>
+    </header>
+
+    <section class="shop-hero">
+        <h1>Travel <span>Essentials</span></h1>
+        <p>Premium gear for your next legendary journey.</p>
+    </section>
+
+    <main class="product-grid">
+    <div class="product-card">
+        <div class="discount-badge">SAVE 20%</div>
+        <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500" class="product-img" alt="Backpack">
+        <div class="product-info">
+            <h3>Adventure Backpack 45L</h3>
+            <p class="price"><span>$120</span>$95.00</p>
+            <button class="add-btn" onclick="addToCart('Backpack', 95)">
+                <i class="bi bi-plus-circle"></i> Add to Cart
+            </button>
+        </div>
+    </div>
+
+    <div class="product-card">
+        <img src="asset/camera.jpg" class="product-img" alt="Camera">
+        <div class="product-info">
+            <h3>Compact Travel Camera</h3>
+            <p class="price">$299.00</p>
+            <button class="add-btn" onclick="addToCart('Travel Camera', 299)">
+                <i class="bi bi-plus-circle"></i> Add to Cart
+            </button>
+        </div>
+    </div>
+
+    <div class="product-card">
+        <div class="discount-badge">NEW</div>
+        <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=500" class="product-img" alt="Bottle">
+        <div class="product-info">
+            <h3>Thermal Water Bottle</h3>
+            <p class="price">$35.00</p>
+            <button class="add-btn" onclick="addToCart('Water Bottle', 35)">
+                <i class="bi bi-plus-circle"></i> Add to Cart
+            </button>
+        </div>
+    </div>
+
+    <div class="product-card">
+        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500" class="product-img" alt="Shoes">
+        <div class="product-info">
+            <h3>Trekking Sneakers</h3>
+            <p class="price">$110.00</p>
+            <button class="add-btn" onclick="addToCart('Trekking Shoes', 110)">
+                <i class="bi bi-plus-circle"></i> Add to Cart
+            </button>
+        </div>
+    </div>
+
+    <div class="product-card">
+        <div class="discount-badge">HOT</div>
+        <img src="https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=500" class="product-img" alt="Tent">
+        <div class="product-info">
+            <h3>Solo Camping Tent</h3>
+            <p class="price">$150.00</p>
+            <button class="add-btn" onclick="addToCart('Camping Tent', 150)">
+                <i class="bi bi-plus-circle"></i> Add to Cart
+            </button>
+        </div>
+    </div>
+
+    <div class="product-card">
+        <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500" class="product-img" alt="Watch">
+        <div class="product-info">
+            <h3>Rugged Smartwatch</h3>
+            <p class="price">$185.00</p>
+            <button class="add-btn" onclick="addToCart('Smartwatch', 185)">
+                <i class="bi bi-plus-circle"></i> Add to Cart
+            </button>
+        </div>
+    </div>
+
+    <div class="product-card">
+        <div class="discount-badge">SALE</div>
+        <img src="asset/flashlight.png" class="product-img" alt="Flashlight">
+        <div class="product-info">
+            <h3>Tactical Flashlight</h3>
+            <p class="price"><span>$40</span>$25.00</p>
+            <button class="add-btn" onclick="addToCart('Flashlight', 25)">
+                <i class="bi bi-plus-circle"></i> Add to Cart
+            </button>
+        </div>
+    </div>
+
+    <div class="product-card">
+        <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500" class="product-img" alt="Jacket">
+        <div class="product-info">
+            <h3>Windproof Shell Jacket</h3>
+            <p class="price">$79.00</p>
+            <button class="add-btn" onclick="addToCart('Windbreaker', 79)">
+                <i class="bi bi-plus-circle"></i> Add to Cart
+            </button>
+        </div>
+    </div>
+    <div class="product-card">
+        <div class="discount-badge" style="background: #9b59b6;">PREMIUM</div>
+        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500" class="product-img" alt="Headphones">
+        <div class="product-info">
+            <h3>Traveler Noise Cancel</h3>
+            <p class="price">$210.00</p>
+            <button class="add-btn" onclick="addToCart('Headphones', 210)">
+                <i class="bi bi-plus-circle"></i> Add to Cart
+            </button>
+        </div>
+    </div>
+</main>
+
+    <div id="cartSidebar" class="cart-sidebar">
+        <div class="cart-header">
+            <h2>Your Cart</h2>
+            <i class="bi bi-x-lg" onclick="toggleCart()" style="cursor:pointer;"></i>
+        </div>
+        <div id="cartItems">
+            <p style="color:#aaa;">Your cart is empty.</p>
+        </div>
+        <hr style="margin: 20px 0;">
+        <div style="display:flex; justify-content:space-between; font-weight:800; font-size:1.2rem;">
+            <span>Total:</span>
+            <span id="totalPrice">$0</span>
+        </div>
+        <button class="add-btn" style="margin-top:30px; background:var(--primary);" onclick="alert('Proceeding to Checkout...')">Checkout Now</button>
+    </div>
+
+    <footer class="main-footer">
+    <div class="container footer-layout">
+        <div class="footer-col-brand">
+            <div class="footer-logo">
+                <i class="fa-solid fa-plane-up"></i>
+                <span>GLOBE TREKKER</span>
+            </div>
+            <p class="follow-text">Follow us on</p>
+            <div class="social-icons">
+                <a href="#"><i class="bi bi-facebook"></i></a>
+                <a href="#"><i class="bi bi-instagram"></i></a>
+                <a href="#"><i class="bi bi-twitter"></i></a>
+                <a href="#"><i class="bi bi-youtube"></i></a>
+                <a href="#"><i class="bi bi-pinterest"></i></a>
+            </div>
+        </div>
+        <div class="footer-col-links">
+            <h3>About us</h3>
+            <ul>
+                <li>About Global Trekker</li><li>Contact Us</li><li>Terms and Conditions</li><li>Privacy Policy</li>
+            </ul>
+        </div>
+        <div class="footer-col-links">
+            <h3>Travel Interest</h3>
+            <ul>
+                <li>Family Vacation</li><li>Honeymoon</li><li>Adventure</li><li>Wildlife and Nature</li>
+            </ul>
+        </div>
+        <div class="footer-col-links">
+            <h3>Top Destinations</h3>
+            <ul>
+                <li>Paris</li><li>Italy</li><li>London</li><li>New York City</li>
+            </ul>
+        </div>
+        <div class="footer-col-links">
+            <h3>Guidebook Shop</h3>
+            <ul>
+                <li>Destination Guide</li><li>Non-English Guides</li><li>Shopping Guides</li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <div class="container">
+            <p>Copyright © 2024 Global Trekker, designed by Tisha Saha. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        let cart = [];
+        let total = 0;
+
+        function toggleCart() {
+            document.getElementById('cartSidebar').classList.toggle('active');
+        }
+
+        function addToCart(name, price) {
+            cart.push({name, price});
+            total += price;
+            updateCartUI();
+            
+            // Efek Feedback
+            const count = document.getElementById('count');
+            count.style.transform = "scale(1.5)";
+            setTimeout(() => count.style.transform = "scale(1)", 200);
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cartItems');
+            const count = document.getElementById('count');
+            const totalDisplay = document.getElementById('totalPrice');
+            
+            count.innerText = cart.length;
+            totalDisplay.innerText = "$" + total;
+            
+            if(cart.length > 0) {
+                container.innerHTML = cart.map(item => `
+                    <div class="cart-item">
+                        <i class="bi bi-check2-circle" style="color:var(--primary);"></i>
+                        <div>
+                            <strong>${item.name}</strong><br>
+                            <span style="color:var(--primary); font-weight:bold;">$${item.price}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function openLogin() {
+        document.getElementById('loginPopup').style.display = "flex";
+    }
+
+    function closeLogin() {
+        document.getElementById('loginPopup').style.display = "none";
+    }
+
+    // Fungsi simulasi saat tombol login ditekan
+    function handleLogin(event) {
+        event.preventDefault(); // Mencegah halaman reload
+        alert("Login berhasil! Selamat datang kembali.");
+        closeLogin();
+    }
+
+    // Menutup modal jika klik di area luar (background hitam)
+    window.onclick = function(event) {
+        const modal = document.getElementById('loginPopup');
+        if (event.target == modal) {
+            closeLogin();
+        }
+    }
+
+    // Fungsi untuk Modal Sign Up
+    function openSignUp() {
+        // Tutup modal login dulu kalau lagi terbuka
+        closeLogin();
+        document.getElementById('signupPopup').style.display = "flex";
+    }
+
+    function closeSignUp() {
+        document.getElementById('signupPopup').style.display = "none";
+    }
+
+    function handleSignUp(event) {
+        event.preventDefault();
+        alert("Pendaftaran berhasil! Silahkan login.");
+        closeSignUp();
+        openLogin(); // Arahkan user ke login setelah daftar
+    }
+
+    // Update window.onclick agar bisa menutup semua modal
+    window.onclick = function(event) {
+        const loginModal = document.getElementById('loginPopup');
+        const signupModal = document.getElementById('signupPopup');
+        const videoModal = document.getElementById('videoPopup');
+        
+        if (event.target == loginModal) closeLogin();
+        if (event.target == signupModal) closeSignUp();
+        if (event.target == videoModal) closeVideo();
+    }
+
+    // Fungsi untuk Forgot Password
+    function openForgot() {
+        closeLogin(); // Tutup modal login biar tidak tumpuk
+        document.getElementById('forgotPopup').style.display = "flex";
+    }
+
+    function closeForgot() {
+        document.getElementById('forgotPopup').style.display = "none";
+    }
+
+    function handleForgot(event) {
+        event.preventDefault();
+        alert("Link reset password telah dikirim ke email kamu!");
+        closeForgot();
+    }
+
+    // Update window.onclick agar mencakup semua modal baru
+    window.onclick = function(event) {
+        const loginModal = document.getElementById('loginPopup');
+        const signupModal = document.getElementById('signupPopup');
+        const forgotModal = document.getElementById('forgotPopup');
+        const videoModal = document.getElementById('videoPopup');
+        
+        if (event.target == loginModal) closeLogin();
+        if (event.target == signupModal) closeSignUp();
+        if (event.target == forgotModal) closeForgot();
+        if (event.target == videoModal) closeVideo();
+    }
+
+    function toggleSearch() {
+    const searchBox = document.querySelector('.search-box');
+    const searchInput = document.getElementById('searchInput');
+    
+    // Tambah/Hapus class active
+    searchBox.classList.toggle('active');
+    
+    // Jika aktif, otomatis fokus ke kotak ketik
+    if (searchBox.classList.contains('active')) {
+        searchInput.focus();
+    } else {
+        // Jika ditutup dan ada isinya, bisa jalankan fungsi cari
+        if(searchInput.value !== "") {
+            alert("Searching for: " + searchInput.value);
+            searchInput.value = ""; // Reset setelah cari
+        }
+    }
+}
+
+// Menutup search box jika klik di luar area search
+document.addEventListener('click', (e) => {
+    const searchBox = document.querySelector('.search-box');
+    if (!searchBox.contains(e.target)) {
+        searchBox.classList.remove('active');
+    }
+});
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Plan - Globe Trekker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        :root {
+            --primary: #e67e22;
+            --bg-cream: #fdf7f2;
+            --dark: #1a1a1a;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-cream);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+    
+        /* --- HERO SECTION --- */
+        .hero {
+            padding: 80px 8%;
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            background: linear-gradient(to right, #fdf7f2, #fff);
+        }
+
+        .hero-text { flex: 1; }
+        .hero-text h1 { font-size: 3.5rem; line-height: 1.1; margin-bottom: 20px; }
+        .hero-text h1 span { color: var(--primary); }
+        .hero-text p { font-size: 1.1rem; color: #555; margin-bottom: 30px; }
+
+        .hero-img { flex: 1; border-radius: 30px; overflow: hidden; height: 450px; box-shadow: 20px 20px 0 var(--primary); }
+        .hero-img img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* --- PLANNING STEPS --- */
+        .steps-section { padding: 80px 8%; text-align: center; }
+        .steps-section h2 { font-size: 2.5rem; margin-bottom: 50px; }
+
+        .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+        .step-card { background: var(--white); padding: 40px 30px; border-radius: 20px; transition: 0.3s; }
+        .step-card:hover { transform: translateY(-10px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .step-card i { font-size: 3rem; color: var(--primary); margin-bottom: 20px; display: block; }
+        .step-card h3 { margin-bottom: 15px; }
+
+        /* --- PRICING TIERS --- */
+        .pricing-section { padding: 80px 8%; background: var(--dark); color: var(--white); border-radius: 50px 50px 0 0; }
+        .pricing-section h2 { text-align: center; font-size: 2.5rem; margin-bottom: 50px; }
+
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .price-card { background: #252525; padding: 50px 40px; border-radius: 30px; border: 1px solid #333; transition: 0.3s; }
+        .price-card.featured { border: 2px solid var(--primary); position: relative; transform: scale(1.05); }
+        .featured-tag { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: var(--primary); padding: 5px 20px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
+
+        .price-card h3 { font-size: 1.5rem; margin-bottom: 10px; }
+        .price-card .cost { font-size: 2.5rem; font-weight: 800; margin-bottom: 30px; }
+        .price-card .cost span { font-size: 1rem; font-weight: 400; color: #aaa; }
+        
+        .features-list { list-style: none; margin-bottom: 40px; }
+        .features-list li { margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+        .features-list li i { color: var(--primary); }
+
+       .plan-btn { width: 100%; padding: 15px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .plan-btn.primary { background: var(--primary); color: white; }
+        .plan-btn.secondary { background: white; color: var(--dark); }
+        .plan-btn:hover { opacity: 0.9; transform: scale(1.02); }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .hero { flex-direction: column; text-align: center; padding-top: 40px; }
+            .hero-text h1 { font-size: 2.5rem; }
+            .hero-img { height: 300px; width: 100%; box-shadow: 10px 10px 0 var(--primary); }
+            .price-card.featured { transform: scale(1); }
+        }
+
+        .plan-btn:active {
+    transform: scale(0.95); /* Tombol sedikit mengecil saat ditekan */
+    opacity: 0.8;
+}
+
+.price-card {
+    transition: all 0.3s ease;
+}
+
+/* Efek kartu sedikit bersinar saat mouse di atasnya */
+.price-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 15px 40px rgba(230, 126, 34, 0.2);
+}
+
+/* --- NAVBAR --- */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+.navbar { padding: 20px 0; }
+.nav-container { display: flex; justify-content: space-between; align-items: center; }
+.logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; }
+.logo i { color: #e67e22; transform: rotate(-15deg); }
+.nav-links { display: flex; gap: 30px; }
+.nav-links a { text-decoration: none; color: #555; font-size: 14px; font-weight: 500; }
+.actions { display: flex; align-items: center; gap: 20px; }
+.signin-btn { background: #000; color: #fff; padding: 10px 25px; border-radius: 25px; border: none; cursor: pointer; }
+
+/* --- MODAL / POPUP STYLING --- */
+.modal-overlay { 
+    display: none; /* Awalnya sembunyi, muncul via JS */
+    position: fixed; 
+    top: 0; left: 0; 
+    width: 100%; height: 100%; 
+    background: rgba(0,0,0,0.6); 
+    z-index: 2000; 
+    align-items: center; 
+    justify-content: center; 
+}
+.modal-box { 
+    position: relative; 
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 400px; 
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.btn-close { 
+    position: absolute; 
+    top: 15px; right: 20px; 
+    font-size: 25px; 
+    cursor: pointer; 
+    color: #888;
+}
+
+/* Styling Khusus Login/Signup Form */
+.login-header { 
+    text-align: center; 
+    margin-bottom: 2rem; 
+}
+
+.login-header h2 { 
+    font-size: 24px; 
+    margin-top: 10px; 
+    color: #1a1a1a;
+}
+
+.form-group { 
+    text-align: left; 
+    margin-bottom: 1.2rem; 
+}
+
+.form-group label { 
+    display: block; 
+    font-size: 0.9rem; 
+    font-weight: 600; 
+    margin-bottom: 0.5rem; 
+    color: #333; 
+}
+
+.form-group input { 
+    width: 100%; 
+    padding: 0.8rem; 
+    border: 1px solid #ddd; 
+    border-radius: 8px; 
+    outline: none; 
+    transition: 0.3s; /* Biar halus pas diklik */
+}
+
+.form-group input:focus { 
+    border-color: #e67e22; 
+    box-shadow: 0 0 5px rgba(230, 126, 34, 0.2); /* Efek glow tipis */
+}
+
+.login-options { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    font-size: 0.85rem; 
+    margin-bottom: 1.5rem; 
+}
+
+.login-btn { 
+    width: 100%; 
+    padding: 0.8rem; 
+    font-weight: bold; 
+    background: #e67e22; 
+    color: #fff; 
+    border: none; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    transition: 0.3s ease; /* Biar mantul pas dipencet */
+}
+
+/* Efek pas kursor di atas tombol */
+.login-btn:hover {
+    background: #d35400; 
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(230, 126, 34, 0.3);
+}
+
+/* Efek pas tombol diklik beneran */
+.login-btn:active {
+    transform: scale(0.98);
+}
+
+.signup-link { 
+    text-align: center; 
+    font-size: 0.9rem; 
+    margin-top: 1.5rem; 
+}
+
+.signup-link a { 
+    color: #e67e22; 
+    font-weight: bold; 
+    text-decoration: none; 
+    transition: 0.3s;
+}
+/* --- FOOTER --- */
+.main-footer { background-color: #fdf6f0; padding-top: 80px; }
+.footer-layout { display: grid; grid-template-columns: 1.5fr repeat(4, 1fr); gap: 30px; padding-bottom: 60px; }
+.footer-logo { display: flex; align-items: center; gap: 10px; font-weight: 800; margin-bottom: 20px; }
+.footer-logo i { color: #e67e22; }
+
+.social-icons { display: flex; gap: 8px; margin-top: 15px; }
+.social-icons a { width: 35px; height: 35px; background: #000; color: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 14px; }
+
+.footer-col-links h3 { font-size: 16px; margin-bottom: 20px; }
+.footer-col-links ul { list-style: none; }
+.footer-col-links li { margin-bottom: 12px; color: #555; font-size: 14px; cursor: pointer; }
+
+.footer-bottom {
+    width: 100%;
+    text-align: center; /* Mengetengahkan teks */
+    padding: 20px 0;    /* Memberi ruang atas dan bawah */
+    border-top: 1px solid #ddd; /* Garis tipis opsional untuk pemisah */
+    margin-top: 30px;
+    background: #000;
+    color: #fff;
+}
+
+.footer-bottom .container {
+    display: flex;
+    justify-content: center; /* Memastikan konten container tetap di tengah */
+    align-items: center;
+}
+
+/* Pastikan area kanan berada di lapisan atas */
+.nav-right {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 20px;
+    position: relative; /* Penting */
+    z-index: 1001; /* Harus lebih tinggi dari nav-center */
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    background: #f4f4f4;
+    padding: 8px 12px;
+    border-radius: 50px;
+    cursor: pointer; /* Biar kursor jadi tangan */
+    position: relative;
+    z-index: 1002;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+/* Tambahkan ini untuk tes: kalau kursor di atasnya, warna berubah */
+.search-box:hover {
+    border-color: #e67e22;
+    background: #fff;
+}
+
+.search-box i {
+    font-size: 1.2rem;
+    pointer-events: auto; /* Memastikan ikon menangkap klik */
+}
+
+    </style>
+</head>
+<body>
+
+   <header class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <i class="bi bi-send-fill"></i>
+                <span>GLOBE TREKKER</span>
+            </div>
+            <nav class="nav-links">
+                <a href="destination.html">Destination</a>
+                <a href="travelplan.html">Travel plan</a>
+                <a href="inspiration.html">Inspiration</a>
+                <a href="shop.html">Shop</a>
+                <a href="blog.html">Blog</a>
+            </nav>
+            
+<div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search destination...">
+    <i class="bi bi-search" id="searchBtn" onclick="toggleSearch()"></i>
+    </div>
+            <div class="actions">
+                <button class="signin-btn" onclick="openLogin()">Sign in</button>
+            </div>
+            <div id="loginPopup" class="modal-overlay">
+    <div class="modal-box login-card">
+        <span class="btn-close" onclick="closeLogin()">&times;</span>
+        
+        <div class="login-header">
+            <i class="bi bi-send-fill" style="color: #e67e22; font-size: 2rem;"></i>
+            <h2>Welcome Back</h2>
+            <p>Please enter your details to sign in</p>
+        </div>
+
+        <form onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" placeholder="name@example.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" placeholder="••••••••" required>
+            </div>
+
+            <div class="login-options">
+                <label><input type="checkbox"> Remember me</label>
+                <a href="javascript:void(0)" onclick="openForgot()">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="cta-btn login-btn">Sign In</button>
+            
+            <p class="signup-link">
+    Don't have an account? 
+    <a href="javascript:void(0)" onclick="openSignUp()">Sign up for free</a>
+</p>
+        </form>
+    </div>
+</div>
+
+<div id="forgotPopup" class="modal-overlay">
+    <div class="modal-box login-card">
+        <span class="btn-close" onclick="closeForgot()">&times;</span>
+        <div class="login-header">
+            <i class="bi bi-shield-lock" style="color: #e67e22; font-size: 2.5rem;"></i>
+            <h2>Reset Password</h2>
+            <p>Enter your email and we'll send you a link to reset your password.</p>
+        </div>
+        <form onsubmit="handleForgot(event)">
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" placeholder="name@example.com" required>
+            </div>
+            <button type="submit" class="cta-btn login-btn">Send Reset Link</button>
+            <p class="signup-link">Remember your password? <a href="javascript:void(0)" onclick="openLogin(); closeForgot();">Back to Login</a></p>
+        </form>
+    </div>
+</div>
+
+<div id="signupPopup" class="modal-overlay">
+    <div class="modal-box login-card">
+        <span class="btn-close" onclick="closeSignUp()">&times;</span>
+        <div class="login-header">
+            <h2>Create Account</h2>
+            <p>Join the Globe Trekker community</p>
+        </div>
+        <form onsubmit="handleSignUp(event)">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" placeholder="Your Name" required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" placeholder="name@example.com" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" placeholder="Create password" required>
+            </div>
+            <button type="submit" class="cta-btn login-btn">Sign Up</button>
+            <p class="signup-link">Already have an account? <a href="javascript:void(0)" onclick="openLogin(); closeSignUp();">Sign In</a></p>
+        </form>
+    </div>
+</div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-text">
+            <h1>Plan Your <span>Perfect Journey</span> with Ease</h1>
+            <p>Stop dreaming, start exploring. We provide expert tools and assistance to design unforgettable itineraries, from flight tickets to local hidden gems.</p>
+            <button class="signin-btn" style="padding: 15px 40px; font-size: 1rem;">Start Planning</button>
+        </div>
+        <div class="hero-img">
+            <img src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800" alt="Planning travel">
+        </div>
+    </section>
+
+    <section class="steps-section">
+        <h2>How We <span>Help You?</span></h2>
+        <div class="steps-grid">
+            <div class="step-card">
+                <i class="bi bi-map"></i>
+                <h3>Choose Destination</h3>
+                <p>Search thousands of dream locations based on your budget and interests.</p>
+            </div>
+            <div class="step-card">
+                <i class="bi bi-calendar-check"></i>
+                <h3>Set Your Schedule</h3>
+                <p>Our smart system organizes the fastest and most comfortable routes for you.</p>
+            </div>
+            <div class="step-card">
+                <i class="bi bi-ticket-perforated"></i>
+                <h3>Instant Booking</h3>
+                <p>Book hotels, transport, and attraction tickets all in one seamless platform.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="pricing-section">
+        <h2>Choose Your <span>Service Plan</span></h2>
+        <div class="pricing-grid">
+            <div class="price-card">
+                <h3>Standard</h3>
+                <div class="cost">Free <span>/Trip</span></div>
+                <ul class="features-list">
+                    <li><i class="bi bi-check-circle-fill"></i> Access Public Itineraries</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Save Favorite Destinations</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Travel Checklist</li>
+                    <li style="opacity: 0.3;"><i class="bi bi-x-circle"></i> 24/7 Agent Support</li>
+                </ul>
+                <button class="plan-btn secondary" onclick="buyPlan('Standard')">Select Plan</button>
+            </div>
+
+            <div class="price-card featured">
+                <div class="featured-tag">Most Popular</div>
+                <h3>Premium</h3>
+                <div class="cost">$25 <span>/Trip</span></div>
+                <ul class="features-list">
+                    <li><i class="bi bi-check-circle-fill"></i> Custom AI Itinerary</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Automated Booking</li>
+                    <li><i class="bi bi-check-circle-fill"></i> 15% Hotel Discount</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Offline Travel Guide</li>
+                </ul>
+                <button class="plan-btn primary" onclick="buyPlan('Premium')">Select Plan</button>
+            </div>
+
+            <div class="price-card">
+                <h3>Elite</h3>
+                <div class="cost">$99 <span>/Trip</span></div>
+                <ul class="features-list">
+                    <li><i class="bi bi-check-circle-fill"></i> Personal Travel Manager</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Airport Lounge Access</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Travel Insurance</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Photo/Video Documentation</li>
+                </ul>
+                <button class="plan-btn primary" onclick="buyPlan('Premium')">Select Plan</button>
+            </div>
+        </div>
+    </section>
+
+    <footer class="main-footer">
+    <div class="container footer-layout">
+        <div class="footer-col-brand">
+            <div class="footer-logo">
+                <i class="fa-solid fa-plane-up"></i>
+                <span>GLOBE TREKKER</span>
+            </div>
+            <p class="follow-text">Follow us on</p>
+            <div class="social-icons">
+                <a href="#"><i class="bi bi-facebook"></i></a>
+                <a href="#"><i class="bi bi-instagram"></i></a>
+                <a href="#"><i class="bi bi-twitter"></i></a>
+                <a href="#"><i class="bi bi-youtube"></i></a>
+                <a href="#"><i class="bi bi-pinterest"></i></a>
+            </div>
+        </div>
+        <div class="footer-col-links">
+            <h3>About us</h3>
+            <ul>
+                <li>About Global Trekker</li><li>Contact Us</li><li>Terms and Conditions</li><li>Privacy Policy</li>
+            </ul>
+        </div>
+        <div class="footer-col-links">
+            <h3>Travel Interest</h3>
+            <ul>
+                <li>Family Vacation</li><li>Honeymoon</li><li>Adventure</li><li>Wildlife and Nature</li>
+            </ul>
+        </div>
+        <div class="footer-col-links">
+            <h3>Top Destinations</h3>
+            <ul>
+                <li>Paris</li><li>Italy</li><li>London</li><li>New York City</li>
+            </ul>
+        </div>
+        <div class="footer-col-links">
+            <h3>Guidebook Shop</h3>
+            <ul>
+                <li>Destination Guide</li><li>Non-English Guides</li><li>Shopping Guides</li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <div class="container">
+            <p>Copyright © 2024 Global Trekker, designed by Tisha Saha. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    function buyPlan(planName) {
+        // Efek sederhana: Munculkan pesan konfirmasi
+        alert("Thank you for choosing the " + planName + " Plan! Redirecting you to the payment gateway...");
+        
+        // Atau jika ingin lebih keren, bisa diarahkan ke halaman lain:
+        // window.location.href = "checkout.html?plan=" + planName;
+    }
+     function openLogin() {
+        document.getElementById('loginPopup').style.display = "flex";
+    }
+
+    function closeLogin() {
+        document.getElementById('loginPopup').style.display = "none";
+    }
+
+    // Fungsi simulasi saat tombol login ditekan
+    function handleLogin(event) {
+        event.preventDefault(); // Mencegah halaman reload
+        alert("Login berhasil! Selamat datang kembali.");
+        closeLogin();
+    }
+
+    // Menutup modal jika klik di area luar (background hitam)
+    window.onclick = function(event) {
+        const modal = document.getElementById('loginPopup');
+        if (event.target == modal) {
+            closeLogin();
+        }
+    }
+     // Fungsi untuk Modal Sign Up
+    function openSignUp() {
+        // Tutup modal login dulu kalau lagi terbuka
+        closeLogin();
+        document.getElementById('signupPopup').style.display = "flex";
+    }
+
+    function closeSignUp() {
+        document.getElementById('signupPopup').style.display = "none";
+    }
+
+    function handleSignUp(event) {
+        event.preventDefault();
+        alert("Pendaftaran berhasil! Silahkan login.");
+        closeSignUp();
+        openLogin(); // Arahkan user ke login setelah daftar
+    }
+
+    // Update window.onclick agar bisa menutup semua modal
+    window.onclick = function(event) {
+        const loginModal = document.getElementById('loginPopup');
+        const signupModal = document.getElementById('signupPopup');
+        const videoModal = document.getElementById('videoPopup');
+        
+        if (event.target == loginModal) closeLogin();
+        if (event.target == signupModal) closeSignUp();
+        if (event.target == videoModal) closeVideo();
+    }
+
+    // Fungsi untuk Forgot Password
+    function openForgot() {
+        closeLogin(); // Tutup modal login biar tidak tumpuk
+        document.getElementById('forgotPopup').style.display = "flex";
+    }
+
+    function closeForgot() {
+        document.getElementById('forgotPopup').style.display = "none";
+    }
+
+    function handleForgot(event) {
+        event.preventDefault();
+        alert("Link reset password telah dikirim ke email kamu!");
+        closeForgot();
+    }
+
+    // Update window.onclick agar mencakup semua modal baru
+    window.onclick = function(event) {
+        const loginModal = document.getElementById('loginPopup');
+        const signupModal = document.getElementById('signupPopup');
+        const forgotModal = document.getElementById('forgotPopup');
+        const videoModal = document.getElementById('videoPopup');
+        
+        if (event.target == loginModal) closeLogin();
+        if (event.target == signupModal) closeSignUp();
+        if (event.target == forgotModal) closeForgot();
+        if (event.target == videoModal) closeVideo();
+    }
+
+    // --- FUNGSI SEARCH ---
+function toggleSearch() {
+    const searchBox = document.querySelector('.search-box');
+    const searchInput = document.getElementById('searchInput');
+    
+    if (searchBox && searchInput) {
+        searchBox.classList.toggle('active');
+        if (searchBox.classList.contains('active')) {
+            searchInput.focus();
+        }
+    }
+}
+
+// Menutup search box jika klik di luar area
+document.addEventListener('click', (e) => {
+    const searchBox = document.querySelector('.search-box');
+    if (searchBox && !searchBox.contains(e.target)) {
+        searchBox.classList.remove('active');
+    }
+});
+
+// --- FUNGSI TOMBOL PLAN & EXPLORE ---
+document.addEventListener('DOMContentLoaded', () => {
+    // Cari semua tombol dengan teks "Plan your trip"
+    const planButtons = document.querySelectorAll('.cta-btn');
+    planButtons.forEach(btn => {
+        btn.onclick = () => {
+            window.location.href = 'plan.html'; // Arahkan ke halaman plan
+        };
+    });
+
+    // Cari tombol "Explore all destinations"
+    const exploreBtn = document.querySelector('.explore-all');
+    if (exploreBtn) {
+        exploreBtn.onclick = () => {
+            window.location.href = 'destination.html'; // Arahkan ke halaman destinasi
+        };
+    }
+});
+
+function toggleSearch() {
+    const searchBox = document.querySelector('.search-box');
+    const searchInput = document.getElementById('searchInput');
+    
+    // Tambah/Hapus class active
+    searchBox.classList.toggle('active');
+    
+    // Jika aktif, otomatis fokus ke kotak ketik
+    if (searchBox.classList.contains('active')) {
+        searchInput.focus();
+    } else {
+        // Jika ditutup dan ada isinya, bisa jalankan fungsi cari
+        if(searchInput.value !== "") {
+            alert("Searching for: " + searchInput.value);
+            searchInput.value = ""; // Reset setelah cari
+        }
+    }
+}
+
+// Menutup search box jika klik di luar area search
+document.addEventListener('click', (e) => {
+    const searchBox = document.querySelector('.search-box');
+    if (!searchBox.contains(e.target)) {
+        searchBox.classList.remove('active');
+    }
+});
+</script>
+
+</body>
+</html>

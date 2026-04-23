@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Globe Trekker - Full Page</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <i class="bi bi-send-fill"></i>
+                <span>GLOBE TREKKER</span>
+            </div>
+            <nav class="nav-links">
+                <a href="destination.html">Destination</a>
+                <a href="travelplan.html">Travel plan</a>
+                <a href="inspiration.html">Inspiration</a>
+                <a href="shop.html">Shop</a>
+                <a href="blog.html">Blog</a>
+            </nav>
+                <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search destination...">
+    <i class="bi bi-search" id="searchBtn" onclick="toggleSearch()"></i>
+    </div>
+    <div class="actions">
+                <button class="signin-btn" onclick="openLogin()">Sign in</button>
+            </div>
+            <div id="loginPopup" class="modal-overlay">
+    <div class="modal-box login-card">
+        <span class="btn-close" onclick="closeLogin()">&times;</span>
+        
+        <div class="login-header">
+            <i class="bi bi-send-fill" style="color: #e67e22; font-size: 2rem;"></i>
+            <h2>Welcome Back</h2>
+            <p>Please enter your details to sign in</p>
+        </div>
+
+        <form onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" placeholder="name@example.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" placeholder="••••••••" required>
+            </div>
+
+            <div class="login-options">
+                <label><input type="checkbox"> Remember me</label>
+                <a href="javascript:void(0)" onclick="openForgot()">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="cta-btn login-btn">Sign In</button>
+            
+            <p class="signup-link">
+    Don't have an account? 
+    <a href="javascript:void(0)" onclick="openSignUp()">Sign up for free</a>
+</p>
+        </form>
+    </div>
+</div>
+
+<div id="forgotPopup" class="modal-overlay">
+    <div class="modal-box login-card">
+        <span class="btn-close" onclick="closeForgot()">&times;</span>
+        <div class="login-header">
+            <i class="bi bi-shield-lock" style="color: #e67e22; font-size: 2.5rem;"></i>
+            <h2>Reset Password</h2>
+            <p>Enter your email and we'll send you a link to reset your password.</p>
+        </div>
+        <form onsubmit="handleForgot(event)">
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" placeholder="name@example.com" required>
+            </div>
+            <button type="submit" class="cta-btn login-btn">Send Reset Link</button>
+            <p class="signup-link">Remember your password? <a href="javascript:void(0)" onclick="openLogin(); closeForgot();">Back to Login</a></p>
+        </form>
+    </div>
+</div>
+
+<div id="signupPopup" class="modal-overlay">
+    <div class="modal-box login-card">
+        <span class="btn-close" onclick="closeSignUp()">&times;</span>
+        <div class="login-header">
+            <h2>Create Account</h2>
+            <p>Join the Globe Trekker community</p>
+        </div>
+        <form onsubmit="handleSignUp(event)">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" placeholder="Your Name" required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" placeholder="name@example.com" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" placeholder="Create password" required>
+            </div>
+            <button type="submit" class="cta-btn login-btn">Sign Up</button>
+            <p class="signup-link">Already have an account? <a href="javascript:void(0)" onclick="openLogin(); closeSignUp();">Sign In</a></p>
+        </form>
+    </div>
+</div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="world-map-overlay"></div>
+        <div class="container hero-layout">
+            <div class="hero-content">
+                <h1>Discover the <br> World's Hidden <br> Wonders</h1>
+                <p>Find the unique moments and hidden gems that ignite unforgettable experiences. From rare encounters to remarkable destinations.</p>
+                <a href="travelplan.html" style="text-decoration: none;">
+    <button class="cta-btn">Plan your trip</button>
+</a>
+            </div>
+
+            <div class="hero-gallery">
+                <div class="stamp-circle">
+                    <svg viewBox="0 0 100 100"><path id="txtPath" d="M 50,50 m -37,0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none"/><text font-size="10" fill="rgba(230,126,34,0.5)"><textPath href="#txtPath">EXPLORE THE WORLD • JOURNEY BEYOND •</textPath></text></svg>
+                    <i class="fa-solid fa-mountain-sun"></i>
+                </div>
+                <div class="img-wrapper main-img"><img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80""></div>
+                <div class="img-wrapper top-img"><img src="https://images.unsplash.com/photo-1528127269322-539801943592?w=400"></div>
+                <div class="img-wrapper bottom-img"><img src="https://images.unsplash.com/photo-1503220317375-aaad61436b1b?auto=format&fit=crop&w=400&q=80"></div>
+                <div class="plane p1"><i class="bi bi-send-fill"></i></div>
+                <div class="plane p2"><i class="bi bi-send-fill"></i></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="destinations reveal">
+        <div class="container">
+            <div class="dest-header">
+                <h2>Top Destinations</h2>
+                <div class="dest-nav-row">
+                    <nav class="tabs">
+                        <a href="#" class="active">Popular</a>
+                        <a href="#">USA</a>
+                        <a href="#">Europe</a>
+                        <a href="#">Asia</a>
+                        <a href="#">Africa & Middle East</a>
+                        <a href="#">Autralia & The Pasific</a>
+                        <a href="#">Canada</a>
+                        <a href="#">More <i class="fa-solid fa-chevron-down"></i></a>
+                    </nav>
+                    <a href="destination.html" style="text-decoration: none;">
+    <button class="explore-all">Explore all destinations</button>
+</a>
+                </div>
+            </div>
+
+            <div class="dest-grid">
+                <div class="card"><div class="img-box"><img src="https://images.unsplash.com/photo-1528127269322-539801943592?w=500"></div><h3>Golden Bridge</h3><p>Vietnam</p></div>
+                <div class="card"><div class="img-box"><img src="asset/dubrovnik.jpg"></div><h3>Dubrovnik</h3><p>Croatia</p></div>
+                <div class="card"><div class="img-box"><img src="asset/cappadocia.jpg"></div><h3>Cappadocia</h3><p>Turkey</p></div>
+                <div class="card"><div class="img-box"><img src="https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=500"></div><h3>Sydney Bridge</h3><p>Australia</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="stories-section reveal">
+    <div class="container">
+        <div class="stories-header">
+            <h2>Latest Stories</h2>
+            <button class="read-more-btn" onclick="window.location.href='blog.html'">
+    Read more articles
+</button>
+        </div>
+
+        <div class="stories-grid">
+            <div class="main-story">
+                <div class="main-story-img">
+                    <img src="https://images.unsplash.com/photo-1550507992-eb63ffee0847?w=800" alt="Food and Drink">
+                </div>
+                <span class="category orange">Food and Drink</span>
+                <h3>Los Angeles food & drink guide: 10 things to try in Los Angeles, California</h3>
+                <p class="meta">Aug 19, 2024 • 4 min read</p>
+                <p class="excerpt">It seems that in California, almost any problem can be solved with a combination of avocados, yoga, and dogs. After all, food, health, and...</p>
+            </div>
+
+            <div class="side-stories">
+                <div class="side-item">
+                    <div class="side-img">
+                        <img src="https://images.unsplash.com/photo-1533929736458-ca588d08c8be?w=400" alt="Shopping">
+                    </div>
+                    <div class="side-content">
+                        <span class="category blue">Shopping</span>
+                        <h4>15 South London Markets You'll Love: Best Markets in South London</h4>
+                        <p class="meta">Aug 15, 2024 • 6 min read</p>
+                    </div>
+                </div>
+                <div class="side-item">
+                    <div class="side-img">
+                        <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400" alt="Hotels">
+                    </div>
+                    <div class="side-content">
+                        <span class="category blue">Hotels</span>
+                        <h4>10 incredible hotels around the world you can book with points in 2024</h4>
+                        <p class="meta">Aug 10, 2024 • 5 min read</p>
+                    </div>
+                </div>
+                <div class="side-item">
+                    <div class="side-img">
+                        <img src="asset/travel.jpg" alt="Travel Budget">
+                    </div>
+                    <div class="side-content">
+                        <span class="category blue">Travel Budget</span>
+                        <h4>Visiting Chicago on a Budget: Affordable Eats and Attraction Deals</h4>
+                        <p class="meta">Aug 02, 2024 • 8 min read</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+    <section class="highlights reveal">
+        <div class="container">
+            <h2 class="section-title">Trekker's Highlights</h2>
+            
+            <div class="highlights-grid">
+                <div class="col-left">
+                    <div class="user-card">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100" alt="Maria Angelica" class="avatar">
+                        <div class="user-detail">
+                            <strong>Maria Angelica</strong>
+                            <span>Manila, Philippines</span>
+                        </div>
+                    </div>
+                    
+                    <div class="rating-stars">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="fbi bi-star-fill"></i>
+                    </div>
+
+                    <h3 class="story-title">An Unforgettable Journey Through Turkey</h3>
+                    <p class="story-text">
+                        Thanks to Globe Trekker, my trip to Turkey was truly magical. Their expert guides and insider tips led me to hidden gems and must-see spots I would have missed otherwise. The suggested itinerary made exploring Istanbul's vibrant streets and Cappadocia's stunning landscapes effortless.
+                    </p>
+                </div>
+
+                <div class="col-center">
+                    <div class="main-frame">
+                        <img src="asset/cappadocia1.jpg" alt="Cappadocia">
+                        <div class="dots-nav">
+                            <span class="dot active"></span>
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-right">
+                    <div class="video-container" onclick="playVideo()">
+                        <img src="https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=500" alt="Bosphorus">
+                        <div class="overlay-play">
+                            <i class="fa-solid fa-play"></i>
+                        </div>
+                    </div>
+                    <p class="video-desc">Sunset from Bosphorus Yacht Cruise</p>
+                    <button class="btn-more">See more highlights</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="videoPopup" class="modal-overlay">
+    <div class="modal-box">
+        <span class="btn-close" onclick="closeVideo()">&times;</span>
+        <iframe id="youtubeFrame" width="100%" height="450" src="" frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allowfullscreen>
+</iframe>
+    </div>
+</div>
+
+    <section class="newsletter-section">
+    <div class="newsletter-overlay">
+        <h1>Get Your Travel Inspiration<br>Straight to Your Inbox</h1>
+        <div class="newsletter-form">
+            <input type="email" placeholder="Email address" class="email-input">
+            <button class="subscribe-btn">Subscribe</button>
+        </div>
+        <p class="newsletter-footer">
+            Subscribe to our newsletters and exclusive promotions. Read our <a href="#">Privacy Policy</a>.
+        </p>
+    </div>
+</section>
+
+<footer class="main-footer">
+    <div class="container footer-layout">
+        <div class="footer-col-brand">
+            <div class="footer-logo">
+                <i class="fa-solid fa-plane-up"></i>
+                <span>GLOBE TREKKER</span>
+            </div>
+            <p class="follow-text">Follow us on</p>
+            <div class="social-icons">
+                <a href="#"><i class="bi bi-facebook"></i></a>
+                <a href="#"><i class="bi bi-instagram"></i></a>
+                <a href="#"><i class="bi bi-twitter"></i></a>
+                <a href="#"><i class="bi bi-youtube"></i></a>
+                <a href="#"><i class="bi bi-pinterest"></i></a>
+            </div>
+        </div>
+        <div class="footer-col-links">
+            <h3>About us</h3>
+            <ul>
+                <li>About Global Trekker</li><li>Contact Us</li><li>Terms and Conditions</li><li>Privacy Policy</li>
+            </ul>
+        </div>
+        <div class="footer-col-links">
+            <h3>Travel Interest</h3>
+            <ul>
+                <li>Family Vacation</li><li>Honeymoon</li><li>Adventure</li><li>Wildlife and Nature</li>
+            </ul>
+        </div>
+        <div class="footer-col-links">
+            <h3>Top Destinations</h3>
+            <ul>
+                <li>Paris</li><li>Italy</li><li>London</li><li>New York City</li>
+            </ul>
+        </div>
+        <div class="footer-col-links">
+            <h3>Guidebook Shop</h3>
+            <ul>
+                <li>Destination Guide</li><li>Non-English Guides</li><li>Shopping Guides</li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <div class="container">
+            <p>Copyright © 2024 Global Trekker, designed by Tisha Saha. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<div id="progressBar"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    function playVideo() {
+        const modal = document.getElementById('videoPopup');
+        const frame = document.getElementById('youtubeFrame');
+        
+        // ID Video diambil dari link yang kamu kasih (2Z2LX4loEgs)
+        const videoId = "2Z2LX4loEgs"; 
+        
+        // Link wajib menggunakan format /embed/
+        // Ditambah mute=1 agar autoplay diizinkan oleh browser
+        frame.src = "https://www.youtube.com/embed/" + videoId + "?autoplay=1&mute=1&rel=0";
+        
+        modal.style.display = "flex";
+    }
+
+    function closeVideo() {
+        const modal = document.getElementById('videoPopup');
+        const frame = document.getElementById('youtubeFrame');
+        
+        modal.style.display = "none";
+        frame.src = ""; // Mematikan suara/video saat ditutup
+    }
+
+    function openLogin() {
+        document.getElementById('loginPopup').style.display = "flex";
+    }
+
+    function closeLogin() {
+        document.getElementById('loginPopup').style.display = "none";
+    }
+
+    // Fungsi simulasi saat tombol login ditekan
+    function handleLogin(event) {
+        event.preventDefault(); // Mencegah halaman reload
+        alert("Login berhasil! Selamat datang kembali.");
+        closeLogin();
+    }
+
+    // Menutup modal jika klik di area luar (background hitam)
+    window.onclick = function(event) {
+        const modal = document.getElementById('loginPopup');
+        if (event.target == modal) {
+            closeLogin();
+        }
+    }
+
+    // Fungsi untuk Modal Sign Up
+    function openSignUp() {
+        // Tutup modal login dulu kalau lagi terbuka
+        closeLogin();
+        document.getElementById('signupPopup').style.display = "flex";
+    }
+
+    function closeSignUp() {
+        document.getElementById('signupPopup').style.display = "none";
+    }
+
+    function handleSignUp(event) {
+        event.preventDefault();
+        alert("Pendaftaran berhasil! Silahkan login.");
+        closeSignUp();
+        openLogin(); // Arahkan user ke login setelah daftar
+    }
+
+    // Update window.onclick agar bisa menutup semua modal
+    window.onclick = function(event) {
+        const loginModal = document.getElementById('loginPopup');
+        const signupModal = document.getElementById('signupPopup');
+        const videoModal = document.getElementById('videoPopup');
+        
+        if (event.target == loginModal) closeLogin();
+        if (event.target == signupModal) closeSignUp();
+        if (event.target == videoModal) closeVideo();
+    }
+
+    // Fungsi untuk Forgot Password
+    function openForgot() {
+        closeLogin(); // Tutup modal login biar tidak tumpuk
+        document.getElementById('forgotPopup').style.display = "flex";
+    }
+
+    function closeForgot() {
+        document.getElementById('forgotPopup').style.display = "none";
+    }
+
+    function handleForgot(event) {
+        event.preventDefault();
+        alert("Link reset password telah dikirim ke email kamu!");
+        closeForgot();
+    }
+
+    // Update window.onclick agar mencakup semua modal baru
+    window.onclick = function(event) {
+        const loginModal = document.getElementById('loginPopup');
+        const signupModal = document.getElementById('signupPopup');
+        const forgotModal = document.getElementById('forgotPopup');
+        const videoModal = document.getElementById('videoPopup');
+        
+        if (event.target == loginModal) closeLogin();
+        if (event.target == signupModal) closeSignUp();
+        if (event.target == forgotModal) closeForgot();
+        if (event.target == videoModal) closeVideo();
+    }
+function toggleSearch() {
+    const searchBox = document.querySelector('.search-box');
+    const searchInput = document.getElementById('searchInput');
+    
+    // Tambah/Hapus class active
+    searchBox.classList.toggle('active');
+    
+    // Jika aktif, otomatis fokus ke kotak ketik
+    if (searchBox.classList.contains('active')) {
+        searchInput.focus();
+    } else {
+        // Jika ditutup dan ada isinya, bisa jalankan fungsi cari
+        if(searchInput.value !== "") {
+            alert("Searching for: " + searchInput.value);
+            searchInput.value = ""; // Reset setelah cari
+        }
+    }
+}
+
+// Menutup search box jika klik di luar area search
+document.addEventListener('click', (e) => {
+    const searchBox = document.querySelector('.search-box');
+    if (!searchBox.contains(e.target)) {
+        searchBox.classList.remove('active');
+    }
+});
+
+function startPlanning() {
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    
+    // Ubah teks sementara biar user tau udah kepencet
+    btn.innerHTML = "<i class='bi bi-hourglass-split'></i> Loading...";
+    btn.style.opacity = "0.8";
+
+    setTimeout(() => {
+        // Simulasi pindah halaman atau buka form
+        alert("Preparing your personal itinerary... Get ready!");
+        btn.innerHTML = originalText;
+        btn.style.opacity = "1";
+        
+        // window.location.href = 'plan.html'; // Aktifkan ini untuk pindah halaman
+    }, 800);
+}
+
+const reveals = document.querySelectorAll('.reveal');
+
+window.addEventListener('scroll', () => {
+  reveals.forEach((el) => {
+    const windowHeight = window.innerHeight;
+    const elementTop = el.getBoundingClientRect().top;
+
+    if (elementTop < windowHeight - 100) {
+      el.classList.add('active');
+    }
+  });
+});
+
+window.addEventListener("scroll", function() {
+    const header = document.querySelector("header");
+    header.classList.toggle("scrolled", window.scrollY > 50);
+});
+
+const glow = document.createElement("div");
+glow.classList.add("cursor-glow");
+document.body.appendChild(glow);
+
+document.addEventListener("mousemove", (e) => {
+  glow.style.left = e.clientX + "px";
+  glow.style.top = e.clientY + "px";
+});
+
+window.addEventListener("scroll", () => {
+  let scrollTop = document.documentElement.scrollTop;
+  let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  let progress = (scrollTop / height) * 100;
+  document.getElementById("progressBar").style.width = progress + "%";
+});
+
+</script>
+</body>
+</html>

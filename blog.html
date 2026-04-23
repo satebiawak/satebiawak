@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Globe Trekker Journal - Stories from the Road</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        :root {
+            --primary: #e67e22;
+            --dark: #1a1a1a;
+            --white: #ffffff;
+            --text-muted: #666;
+            --bg-soft: #fcfcfc;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-soft); color: var(--dark); line-height: 1.6; }
+
+        /* --- READ PROGRESS BAR --- */
+        #scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: var(--primary);
+            z-index: 2001;
+            transition: width 0.1s;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            padding: 20px 8%;
+            background: var(--white);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        /* --- FEATURED HERO --- */
+        .featured-hero {
+            padding: 40px 8%;
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .hero-img {
+            width: 100%;
+            height: 450px;
+            object-fit: cover;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .hero-content span { color: var(--primary); font-weight: 600; text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; }
+        .hero-content h1 { font-family: 'Playfair Display', serif; font-size: 3rem; margin: 15px 0; line-height: 1.2; }
+        .hero-content p { color: var(--text-muted); margin-bottom: 25px; }
+
+        /* --- MAIN CONTENT & SIDEBAR --- */
+        .blog-container {
+            padding: 40px 8% 80px;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 50px;
+        }
+
+        /* Blog Post Cards */
+        .post-card {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .post-card:hover { transform: translateX(10px); }
+
+        .post-card img { width: 250px; height: 180px; object-fit: cover; border-radius: 15px; }
+
+        .post-info h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 10px; position: relative; display: inline-block; }
+        .post-info h2::after { content: ''; position: absolute; width: 0; height: 2px; bottom: 0; left: 0; background-color: var(--primary); transition: 0.3s; }
+        .post-card:hover h2::after { width: 100%; }
+
+        .post-meta { font-size: 0.8rem; color: #aaa; margin-bottom: 10px; }
+
+        /* Sidebar */
+        .sidebar { position: sticky; top: 100px; height: fit-content; }
+        .sidebar-widget {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            margin-bottom: 30px;
+        }
+
+        .sidebar-widget h3 { margin-bottom: 20px; border-left: 4px solid var(--primary); padding-left: 15px; }
+
+        .category-list { list-style: none; }
+        .category-list li { padding: 10px 0; border-bottom: 1px solid #f4f4f4; display: flex; justify-content: space-between; cursor: pointer; }
+        .category-list li:hover { color: var(--primary); }
+
+        .btn-read {
+            padding: 10px 25px;
+            background: var(--dark);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-read:hover { background: var(--primary); }
+
+        @media (max-width: 900px) {
+            .featured-hero, .blog-container { grid-template-columns: 1fr; }
+            .post-card { flex-direction: column; }
+            .post-card img { width: 100%; height: 250px; }
+        }
+        /* --- NAVBAR --- */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+.navbar { padding: 20px 0; }
+.nav-container { display: flex; justify-content: space-between; align-items: center; }
+.logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; }
+.logo i { color: #e67e22; transform: rotate(-15deg); }
+.nav-links { display: flex; gap: 30px; }
+.nav-links a { text-decoration: none; color: #555; font-size: 14px; font-weight: 500; }
+.actions { display: flex; align-items: center; gap: 20px; }
+.signin-btn { background: #000; color: #fff; padding: 10px 25px; border-radius: 25px; border: none; cursor: pointer; }
+
+/* --- MODAL / POPUP STYLING --- */
+.modal-overlay { 
+    display: none; /* Awalnya sembunyi, muncul via JS */
+    position: fixed; 
+    top: 0; left: 0; 
+    width: 100%; height: 100%; 
+    background: rgba(0,0,0,0.6); 
+    z-index: 2000; 
+    align-items: center; 
+    justify-content: center; 
+}
+.modal-box { 
+    position: relative; 
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 400px; 
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.btn-close { 
+    position: absolute; 
+    top: 15px; right: 20px; 
+    font-size: 25px; 
+    cursor: pointer; 
+    color: #888;
+}
+
+/* Styling Khusus Login/Signup Form */
+.login-header { 
+    text-align: center; 
+    margin-bottom: 2rem; 
+}
+
+.login-header h2 { 
+    font-size: 24px; 
+    margin-top: 10px; 
+    color: #1a1a1a;
+}
+
+.form-group { 
+    text-align: left; 
+    margin-bottom: 1.2rem; 
+}
+
+.form-group label { 
+    display: block; 
+    font-size: 0.9rem; 
+    font-weight: 600; 
+    margin-bottom: 0.5rem; 
+    color: #333; 
+}
+
+.form-group input { 
+    width: 100%; 
+    padding: 0.8rem; 
+    border: 1px solid #ddd; 
+    border-radius: 8px; 
+    outline: none; 
+    transition: 0.3s; /* Biar halus pas diklik */
+}
+
+.form-group input:focus { 
+    border-color: #e67e22; 
+    box-shadow: 0 0 5px rgba(230, 126, 34, 0.2); /* Efek glow tipis */
+}
+
+.login-options { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    font-size: 0.85rem; 
+    margin-bottom: 1.5rem; 
+}
+
+.login-btn { 
+    width: 100%; 
+    padding: 0.8rem; 
+    font-weight: bold; 
+    background: #e67e22; 
+    color: #fff; 
+    border: none; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    transition: 0.3s ease; /* Biar mantul pas dipencet */
+}
+
+/* Efek pas kursor di atas tombol */
+.login-btn:hover {
+    background: #d35400; 
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(230, 126, 34, 0.3);
+}
+
+/* Efek pas tombol diklik beneran */
+.login-btn:active {
+    transform: scale(0.98);
+}
+
+.signup-link { 
+    text-align: center; 
+    font-size: 0.9rem; 
+    margin-top: 1.5rem; 
+}
+
+.signup-link a { 
+    color: #e67e22; 
+    font-weight: bold; 
+    text-decoration: none; 
+    transition: 0.3s;
+}
+/* --- FOOTER --- */
+.main-footer { background-color: #fdf6f0; padding-top: 80px; }
+.footer-layout { display: grid; grid-template-columns: 1.5fr repeat(4, 1fr); gap: 30px; padding-bottom: 60px; }
+.footer-logo { display: flex; align-items: center; gap: 10px; font-weight: 800; margin-bottom: 20px; }
+.footer-logo i { color: #e67e22; }
+
+.social-icons { display: flex; gap: 8px; margin-top: 15px; }
+.social-icons a { width: 35px; height: 35px; background: #000; color: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 14px; }
+
+.footer-col-links h3 { font-size: 16px; margin-bottom: 20px; }
+.footer-col-links ul { list-style: none; }
+.footer-col-links li { margin-bottom: 12px; color: #555; font-size: 14px; cursor: pointer; }
+
+.footer-bottom {
+    width: 100%;
+    text-align: center; /* Mengetengahkan teks */
+    padding: 20px 0;    /* Memberi ruang atas dan bawah */
+    border-top: 1px solid #ddd; /* Garis tipis opsional untuk pemisah */
+    margin-top: 30px;
+    background: #000;
+    color: #fff;
+}
+
+.footer-bottom .container {
+    display: flex;
+    justify-content: center; /* Memastikan konten container tetap di tengah */
+    align-items: center;
+}
+
+    </style>
+</head>
+<body>
+       <header class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <i class="bi bi-send-fill"></i>
+                <span>GLOBE TREKKER</span>
+            </div>
+            <nav class="nav-links">
+                <a href="destination.html">Destination</a>
+                <a href="travelplan.html">Travel plan</a>
+                <a href="inspiration.html">Inspiration</a>
+                <a href="shop.html">Shop</a>
+                <a href="blog.html">Blog</a>
+            </nav>
+            <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search destination...">
+    <i class="bi bi-search" id="searchBtn" onclick="toggleSearch()"></i>
+</div>
+            <div class="actions">
+                <button class="signin-btn" onclick="openLogin()">Sign in</button>
+            </div>
+            <div id="loginPopup" class="modal-overlay">
+    <div class="modal-box login-card">
+        <span class="btn-close" onclick="closeLogin()">&times;</span>
+        
+        <div class="login-header">
+            <i class="bi bi-send-fill" style="color: #e67e22; font-size: 2rem;"></i>
+            <h2>Welcome Back</h2>
+            <p>Please enter your details to sign in</p>
+        </div>
+
+        <form onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" placeholder="name@example.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" placeholder="••••••••" required>
+            </div>
+
+            <div class="login-options">
+                <label><input type="checkbox"> Remember me</label>
+                <a href="javascript:void(0)" onclick="openForgot()">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="cta-btn login-btn">Sign In</button>
+            
+            <p class="signup-link">
+    Don't have an account? 
+    <a href="javascript:void(0)" onclick="openSignUp()">Sign up for free</a>
+</p>
+        </form>
+    </div>
+</div>
+
+<div id="forgotPopup" class="modal-overlay">
+    <div class="modal-box login-card">
+        <span class="btn-close" onclick="closeForgot()">&times;</span>
+        <div class="login-header">
+            <i class="bi bi-shield-lock" style="color: #e67e22; font-size: 2.5rem;"></i>
+            <h2>Reset Password</h2>
+            <p>Enter your email and we'll send you a link to reset your password.</p>
+        </div>
+        <form onsubmit="handleForgot(event)">
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" placeholder="name@example.com" required>
+            </div>
+            <button type="submit" class="cta-btn login-btn">Send Reset Link</button>
+            <p class="signup-link">Remember your password? <a href="javascript:void(0)" onclick="openLogin(); closeForgot();">Back to Login</a></p>
+        </form>
+    </div>
+</div>
+
+<div id="signupPopup" class="modal-overlay">
+    <div class="modal-box login-card">
+        <span class="btn-close" onclick="closeSignUp()">&times;</span>
+        <div class="login-header">
+            <h2>Create Account</h2>
+            <p>Join the Globe Trekker community</p>
+        </div>
+        <form onsubmit="handleSignUp(event)">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" placeholder="Your Name" required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" placeholder="name@example.com" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" placeholder="Create password" required>
+            </div>
+            <button type="submit" class="cta-btn login-btn">Sign Up</button>
+            <p class="signup-link">Already have an account? <a href="javascript:void(0)" onclick="openLogin(); closeSignUp();">Sign In</a></p>
+        </form>
+    </div>
+</div>
+        </div>
+    </header>
+
+    <section class="featured-hero">
+        <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1000" class="hero-img" alt="Featured">
+        <div class="hero-content">
+            <span>Editor's Pick</span>
+            <h1>The Secret Path to the Hidden Waterfalls of Bali</h1>
+            <p>Moving beyond the crowded beaches of Canggu to discover the untouched soul of the island. A journey of silence and mist...</p>
+            <button class="btn-read" onclick="location.href='#'">Read Full Story</button>
+        </div>
+    </section>
+
+    <div class="blog-container">
+        <main>
+            <article class="post-card">
+                <img src="https://images.unsplash.com/photo-1527631746610-bca00a040d60?w=500" alt="Travel">
+                <div class="post-info">
+                    <div class="post-meta">April 20, 2026 • 5 Min Read</div>
+                    <h2>How to Travel Solo Without Feeling Lonely</h2>
+                    <p>Practical tips for embracing your own company while crossing borders...</p>
+                </div>
+            </article>
+
+            <article class="post-card">
+                <img src="https://images.unsplash.com/photo-1513581166391-887a96ddeafd?w=500" alt="Camera">
+                <div class="post-info">
+                    <div class="post-meta">April 18, 2026 • 8 Min Read</div>
+                    <h2>10 Photography Gear Tips for Beginners</h2>
+                    <p>Capturing the perfect sunset doesn't require a $5,000 camera setup...</p>
+                </div>
+            </article>
+
+            <article class="post-card">
+                <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=500" alt="Mountain">
+                <div class="post-info">
+                    <div class="post-meta">April 15, 2026 • 12 Min Read</div>
+                    <h2>Surviving the Alps: A Winter Guide</h2>
+                    <p>What to pack and where to stay during the coldest months in Switzerland...</p>
+                </div>
+            </article>
+        </main>
+
+        <aside class="sidebar">
+            <div class="sidebar-widget">
+                <h3>Categories</h3>
+                <ul class="category-list">
+                    <li><span>Adventures</span> <span>12</span></li>
+                    <li><span>Food & Culture</span> <span>8</span></li>
+                    <li><span>Travel Tips</span> <span>25</span></li>
+                    <li><span>Photography</span> <span>6</span></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-widget" style="background: var(--primary); color: white;">
+                <h3>Join the Club</h3>
+                <p style="color: white; font-size: 0.9rem; margin-bottom: 15px;">Get travel hacks delivered to your inbox weekly.</p>
+                <input type="email" placeholder="Email address" style="width:100%; padding: 10px; border-radius: 10px; border:none; margin-bottom:10px;">
+                <button class="btn-read" style="background: var(--dark); width:100%;">Join Now</button>
+            </div>
+        </aside>
+    </div>
+    <footer class="main-footer">
+    <div class="container footer-layout">
+        <div class="footer-col-brand">
+            <div class="footer-logo">
+                <i class="fa-solid fa-plane-up"></i>
+                <span>GLOBE TREKKER</span>
+            </div>
+            <p class="follow-text">Follow us on</p>
+            <div class="social-icons">
+                <a href="#"><i class="bi bi-facebook"></i></a>
+                <a href="#"><i class="bi bi-instagram"></i></a>
+                <a href="#"><i class="bi bi-twitter"></i></a>
+                <a href="#"><i class="bi bi-youtube"></i></a>
+                <a href="#"><i class="bi bi-pinterest"></i></a>
+            </div>
+        </div>
+        <div class="footer-col-links">
+            <h3>About us</h3>
+            <ul>
+                <li>About Global Trekker</li><li>Contact Us</li><li>Terms and Conditions</li><li>Privacy Policy</li>
+            </ul>
+        </div>
+        <div class="footer-col-links">
+            <h3>Travel Interest</h3>
+            <ul>
+                <li>Family Vacation</li><li>Honeymoon</li><li>Adventure</li><li>Wildlife and Nature</li>
+            </ul>
+        </div>
+        <div class="footer-col-links">
+            <h3>Top Destinations</h3>
+            <ul>
+                <li>Paris</li><li>Italy</li><li>London</li><li>New York City</li>
+            </ul>
+        </div>
+        <div class="footer-col-links">
+            <h3>Guidebook Shop</h3>
+            <ul>
+                <li>Destination Guide</li><li>Non-English Guides</li><li>Shopping Guides</li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <div class="container">
+            <p>Copyright © 2024 Global Trekker, designed by Tisha Saha. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Progress Bar Script
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("scroll-progress").style.width = scrolled + "%";
+        };
+
+        function openLogin() {
+        document.getElementById('loginPopup').style.display = "flex";
+    }
+
+    function closeLogin() {
+        document.getElementById('loginPopup').style.display = "none";
+    }
+
+    // Fungsi simulasi saat tombol login ditekan
+    function handleLogin(event) {
+        event.preventDefault(); // Mencegah halaman reload
+        alert("Login berhasil! Selamat datang kembali.");
+        closeLogin();
+    }
+
+    // Menutup modal jika klik di area luar (background hitam)
+    window.onclick = function(event) {
+        const modal = document.getElementById('loginPopup');
+        if (event.target == modal) {
+            closeLogin();
+        }
+    }
+
+    // Fungsi untuk Modal Sign Up
+    function openSignUp() {
+        // Tutup modal login dulu kalau lagi terbuka
+        closeLogin();
+        document.getElementById('signupPopup').style.display = "flex";
+    }
+
+    function closeSignUp() {
+        document.getElementById('signupPopup').style.display = "none";
+    }
+
+    function handleSignUp(event) {
+        event.preventDefault();
+        alert("Pendaftaran berhasil! Silahkan login.");
+        closeSignUp();
+        openLogin(); // Arahkan user ke login setelah daftar
+    }
+
+    // Update window.onclick agar bisa menutup semua modal
+    window.onclick = function(event) {
+        const loginModal = document.getElementById('loginPopup');
+        const signupModal = document.getElementById('signupPopup');
+        const videoModal = document.getElementById('videoPopup');
+        
+        if (event.target == loginModal) closeLogin();
+        if (event.target == signupModal) closeSignUp();
+        if (event.target == videoModal) closeVideo();
+    }
+
+    // Fungsi untuk Forgot Password
+    function openForgot() {
+        closeLogin(); // Tutup modal login biar tidak tumpuk
+        document.getElementById('forgotPopup').style.display = "flex";
+    }
+
+    function closeForgot() {
+        document.getElementById('forgotPopup').style.display = "none";
+    }
+
+    function handleForgot(event) {
+        event.preventDefault();
+        alert("Link reset password telah dikirim ke email kamu!");
+        closeForgot();
+    }
+
+    // Update window.onclick agar mencakup semua modal baru
+    window.onclick = function(event) {
+        const loginModal = document.getElementById('loginPopup');
+        const signupModal = document.getElementById('signupPopup');
+        const forgotModal = document.getElementById('forgotPopup');
+        const videoModal = document.getElementById('videoPopup');
+        
+        if (event.target == loginModal) closeLogin();
+        if (event.target == signupModal) closeSignUp();
+        if (event.target == forgotModal) closeForgot();
+        if (event.target == videoModal) closeVideo();
+    }
+
+    function toggleSearch() {
+    const searchBox = document.querySelector('.search-box');
+    const searchInput = document.getElementById('searchInput');
+    
+    // Tambah/Hapus class active
+    searchBox.classList.toggle('active');
+    
+    // Jika aktif, otomatis fokus ke kotak ketik
+    if (searchBox.classList.contains('active')) {
+        searchInput.focus();
+    } else {
+        // Jika ditutup dan ada isinya, bisa jalankan fungsi cari
+        if(searchInput.value !== "") {
+            alert("Searching for: " + searchInput.value);
+            searchInput.value = ""; // Reset setelah cari
+        }
+    }
+}
+
+// Menutup search box jika klik di luar area search
+document.addEventListener('click', (e) => {
+    const searchBox = document.querySelector('.search-box');
+    if (!searchBox.contains(e.target)) {
+        searchBox.classList.remove('active');
+    }
+});
+    </script>
+
+</body>
+</html>

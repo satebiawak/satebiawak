@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore Destinations - Globe Trekker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        :root {
+            --primary: #e67e22;
+            --dark: #1a1a1a;
+            --white: #ffffff;
+            --bg-light: #f8f9fa;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        
+        body { background-color: var(--bg-light); color: var(--dark); overflow-x: hidden; }
+
+        /* --- HERO SECTION --- */
+        .hero-mini {
+            padding: 60px 8% 30px;
+            text-align: center;
+        }
+
+        .hero-mini h1 { font-size: 3rem; font-weight: 800; line-height: 1.2; }
+        .hero-mini p { color: #666; margin-top: 10px; font-size: 1.1rem; }
+
+        /* --- FLOATING FILTERS --- */
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 30px 0;
+            padding: 0 8%;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 12px 25px;
+            border: none;
+            background: var(--white);
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-btn.active { background: var(--primary); color: white; }
+        .filter-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+
+        /* --- DESTINATION GRID (STAGGERED) --- */
+        .dest-container {
+            padding: 0 8% 80px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-auto-rows: 400px;
+            gap: 25px;
+        }
+
+        .dest-card {
+            position: relative;
+            border-radius: 30px;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        /* Membuat beberapa kartu lebih tinggi (Staggered Effect) */
+        .dest-card.tall { grid-row: span 1.5; }
+
+        .dest-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .dest-card:hover img { transform: scale(1.1); }
+
+        .dest-content {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 30px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            transition: 0.4s;
+        }
+
+        .dest-card:hover .dest-content { padding-bottom: 40px; }
+
+        .dest-content h3 { font-size: 1.5rem; margin-bottom: 5px; }
+        .dest-content p { font-size: 0.9rem; opacity: 0.8; display: flex; align-items: center; gap: 5px; }
+
+        .rating {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.9);
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--dark);
+            backdrop-filter: blur(5px);
+        }
+
+        @keyframes zoomUp {
+            from { transform: scale(0.9) translateY(30px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .modal-info { padding: 40px; display: flex; flex-direction: column; justify-content: center; }
+
+        @media (max-width: 768px) {
+            .modal-box { grid-template-columns: 1fr; }
+            .dest-container { grid-auto-rows: 350px; }
+        }
+
+        .filter-btn:active, .dest-card:active {
+    transform: scale(0.95) !important;
+}
+
+/* Animasi transisi filter */
+.dest-card {
+    transition: transform 0.4s ease, opacity 0.4s ease, box-shadow 0.3s ease;
+}
+
+/* --- NAVBAR --- */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+.navbar { padding: 20px 0; }
+.nav-container { display: flex; justify-content: space-between; align-items: center; }
+.logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; }
+.logo i { color: #e67e22; transform: rotate(-15deg); }
+.nav-links { display: flex; gap: 30px; }
+.nav-links a { text-decoration: none; color: #555; font-size: 14px; font-weight: 500; }
+.actions { display: flex; align-items: center; gap: 20px; }
+.signin-btn { background: #000; color: #fff; padding: 10px 25px; border-radius: 25px; border: none; cursor: pointer; }
+
+/* --- MODAL / POPUP STYLING --- */
+.modal-overlay { 
+    display: none; /* Awalnya sembunyi, muncul via JS */
+    position: fixed; 
+    top: 0; left: 0; 
+    width: 100%; height: 100%; 
+    background: rgba(0,0,0,0.6); 
+    z-index: 2000; 
+    align-items: center; 
+    justify-content: center; 
+}
+.modal-box { 
+    position: relative; 
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 400px; 
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.btn-close { 
+    position: absolute; 
+    top: 15px; right: 20px; 
+    font-size: 25px; 
+    cursor: pointer; 
+    color: #888;
+}
+
+/* Styling Khusus Login/Signup Form */
+.login-header { 
+    text-align: center; 
+    margin-bottom: 2rem; 
+}
+
+.login-header h2 { 
+    font-size: 24px; 
+    margin-top: 10px; 
+    color: #1a1a1a;
+}
+
+.form-group { 
+    text-align: left; 
+    margin-bottom: 1.2rem; 
+}
+
+.form-group label { 
+    display: block; 
+    font-size: 0.9rem; 
+    font-weight: 600; 
+    margin-bottom: 0.5rem; 
+    color: #333; 
+}
+
+.form-group input { 
+    width: 100%; 
+    padding: 0.8rem; 
+    border: 1px solid #ddd; 
+    border-radius: 8px; 
+    outline: none; 
+    transition: 0.3s; /* Biar halus pas diklik */
+}
+
+.form-group input:focus { 
+    border-color: #e67e22; 
+    box-shadow: 0 0 5px rgba(230, 126, 34, 0.2); /* Efek glow tipis */
+}
+
+.login-options { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    font-size: 0.85rem; 
+    margin-bottom: 1.5rem; 
+}
+
+.login-btn { 
+    width: 100%; 
+    padding: 0.8rem; 
+    font-weight: bold; 
+    background: #e67e22; 
+    color: #fff; 
+    border: none; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    transition: 0.3s ease; /* Biar mantul pas dipencet */
+}
+
+/* Efek pas kursor di atas tombol */
+.login-btn:hover {
+    background: #d35400; 
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(230, 126, 34, 0.3);
+}
+
+/* Efek pas tombol diklik beneran */
+.login-btn:active {
+    transform: scale(0.98);
+}
+
+.signup-link { 
+    text-align: center; 
+    font-size: 0.9rem; 
+    margin-top: 1.5rem; 
+}
+
+.signup-link a { 
+    color: #e67e22; 
+    font-weight: bold; 
+    text-decoration: none; 
+    transition: 0.3s;
+}
+/* --- FOOTER --- */
+.main-footer { background-color: #fdf6f0; padding-top: 80px; }
+.footer-layout { display: grid; grid-template-columns: 1.5fr repeat(4, 1fr); gap: 30px; padding-bottom: 60px; }
+.footer-logo { display: flex; align-items: center; gap: 10px; font-weight: 800; margin-bottom: 20px; }
+.footer-logo i { color: #e67e22; }
+
+.social-icons { display: flex; gap: 8px; margin-top: 15px; }
+.social-icons a { width: 35px; height: 35px; background: #000; color: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 14px; }
+
+.footer-col-links h3 { font-size: 16px; margin-bottom: 20px; }
+.footer-col-links ul { list-style: none; }
+.footer-col-links li { margin-bottom: 12px; color: #555; font-size: 14px; cursor: pointer; }
+
+.footer-bottom {
+    width: 100%;
+    text-align: center; /* Mengetengahkan teks */
+    padding: 20px 0;    /* Memberi ruang atas dan bawah */
+    border-top: 1px solid #ddd; /* Garis tipis opsional untuk pemisah */
+    margin-top: 30px;
+    background: #000;
+    color: #fff;
+}
+
+.footer-bottom .container {
+    display: flex;
+    justify-content: center; /* Memastikan konten container tetap di tengah */
+    align-items: center;
+}
+
+/* Pastikan area kanan berada di lapisan atas */
+.nav-right {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 20px;
+    position: relative; /* Penting */
+    z-index: 1001; /* Harus lebih tinggi dari nav-center */
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    background: #f4f4f4;
+    padding: 8px 12px;
+    border-radius: 50px;
+    cursor: pointer; /* Biar kursor jadi tangan */
+    position: relative;
+    z-index: 1002;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+/* Tambahkan ini untuk tes: kalau kursor di atasnya, warna berubah */
+.search-box:hover {
+    border-color: #e67e22;
+    background: #fff;
+}
+
+.search-box i {
+    font-size: 1.2rem;
+    pointer-events: auto; /* Memastikan ikon menangkap klik */
+}
+
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <i class="bi bi-send-fill"></i>
+                <span>GLOBE TREKKER</span>
+            </div>
+            <nav class="nav-links">
+                <a href="destination.html">Destination</a>
+                <a href="travelplan.html">Travel plan</a>
+                <a href="inspiration.html">Inspiration</a>
+                <a href="shop.html">Shop</a>
+                <a href="blog.html">Blog</a>
+            </nav>
+            <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search destination...">
+    <i class="bi bi-search" id="searchBtn" onclick="toggleSearch()"></i>
+    </div>
+            <div class="actions">
+                <button class="signin-btn" onclick="openLogin()">Sign in</button>
+            </div>
+            <div id="loginPopup" class="modal-overlay">
+    <div class="modal-box login-card">
+        <span class="btn-close" onclick="closeLogin()">&times;</span>
+        
+        <div class="login-header">
+            <i class="bi bi-send-fill" style="color: #e67e22; font-size: 2rem;"></i>
+            <h2>Welcome Back</h2>
+            <p>Please enter your details to sign in</p>
+        </div>
+
+        <form onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" placeholder="name@example.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" placeholder="••••••••" required>
+            </div>
+
+            <div class="login-options">
+                <label><input type="checkbox"> Remember me</label>
+                <a href="javascript:void(0)" onclick="openForgot()">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="cta-btn login-btn">Sign In</button>
+            
+            <p class="signup-link">
+    Don't have an account? 
+    <a href="javascript:void(0)" onclick="openSignUp()">Sign up for free</a>
+</p>
+        </form>
+    </div>
+</div>
+
+<div id="forgotPopup" class="modal-overlay">
+    <div class="modal-box login-card">
+        <span class="btn-close" onclick="closeForgot()">&times;</span>
+        <div class="login-header">
+            <i class="bi bi-shield-lock" style="color: #e67e22; font-size: 2.5rem;"></i>
+            <h2>Reset Password</h2>
+            <p>Enter your email and we'll send you a link to reset your password.</p>
+        </div>
+        <form onsubmit="handleForgot(event)">
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" placeholder="name@example.com" required>
+            </div>
+            <button type="submit" class="cta-btn login-btn">Send Reset Link</button>
+            <p class="signup-link">Remember your password? <a href="javascript:void(0)" onclick="openLogin(); closeForgot();">Back to Login</a></p>
+        </form>
+    </div>
+</div>
+
+<div id="signupPopup" class="modal-overlay">
+    <div class="modal-box login-card">
+        <span class="btn-close" onclick="closeSignUp()">&times;</span>
+        <div class="login-header">
+            <h2>Create Account</h2>
+            <p>Join the Globe Trekker community</p>
+        </div>
+        <form onsubmit="handleSignUp(event)">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" placeholder="Your Name" required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" placeholder="name@example.com" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" placeholder="Create password" required>
+            </div>
+            <button type="submit" class="cta-btn login-btn">Sign Up</button>
+            <p class="signup-link">Already have an account? <a href="javascript:void(0)" onclick="openLogin(); closeSignUp();">Sign In</a></p>
+        </form>
+    </div>
+</div>
+        </div>
+    </header>
+
+    <section class="hero-mini">
+        <h1>Where to <span>Next?</span></h1>
+        <p>Explore our handpicked destinations for your 2026 escape.</p>
+    </section>
+
+    <div class="filters">
+    <button class="filter-btn active" onclick="filterCategory('all', this)">
+        <i class="bi bi-grid-fill"></i> All
+    </button>
+    <button class="filter-btn" onclick="filterCategory('beach', this)">
+        <i class="bi bi-tsunami"></i> Beach
+    </button>
+    <button class="filter-btn" onclick="filterCategory('mountain', this)">
+        <i class="bi bi-reception-4"></i> Mountain
+    </button>
+    <button class="filter-btn" onclick="filterCategory('urban', this)">
+        <i class="bi bi-building"></i> Urban
+    </button>
+</div>
+
+    <main class="dest-container">
+    
+    <div class="dest-card tall" data-category="beach" onclick="openModal('Bora Bora', 'The ultimate luxury island escape with turquoise waters and private overwater bungalows.', 'https://images.unsplash.com/photo-1500916434205-0c77489c6cf7?w=800')">
+        <div class="rating"><i class="bi bi-star-fill text-warning"></i> 4.9</div>
+        <img src="https://images.unsplash.com/photo-1500916434205-0c77489c6cf7?w=800">
+        <div class="dest-content">
+            <h3>Bora Bora</h3>
+            <p><i class="bi bi-geo-alt"></i> French Polynesia</p>
+        </div>
+    </div>
+
+    <div class="dest-card" data-category="beach" onclick="openModal('Maldives', 'A tropical paradise known for its vibrant coral reefs and white sandy beaches.', 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=800')">
+        <div class="rating"><i class="bi bi-star-fill text-warning"></i> 4.8</div>
+        <img src="https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=800">
+        <div class="dest-content">
+            <h3>Maldives</h3>
+            <p><i class="bi bi-geo-alt"></i> South Asia</p>
+        </div>
+    </div>
+
+    <div class="dest-card" data-category="beach" onclick="openModal('Pink Beach', 'Unique pink sands and world-class diving spots in the heart of Komodo National Park.', 'https://images.unsplash.com/photo-1519046904884-53103b34b206?w=800')">
+        <div class="rating"><i class="bi bi-star-fill text-warning"></i> 5.0</div>
+        <img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?w=800">
+        <div class="dest-content">
+            <h3>Pink Beach</h3>
+            <p><i class="bi bi-geo-alt"></i> Labuan Bajo, Indonesia</p>
+        </div>
+    </div>
+
+    <div class="dest-card" data-category="mountain" onclick="openModal('Swiss Alps', 'Breath-taking views of snow-capped mountains and world-famous ski resorts.', 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800')">
+        <div class="rating"><i class="bi bi-star-fill text-warning"></i> 4.8</div>
+        <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800">
+        <div class="dest-content">
+            <h3>Swiss Alps</h3>
+            <p><i class="bi bi-geo-alt"></i> Zermatt, Switzerland</p>
+        </div>
+    </div>
+
+    <div class="dest-card tall" data-category="mountain" onclick="openModal('Mount Fuji', 'The iconic majestic peak of Japan, surrounded by beautiful lakes and shrines.', 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800')">
+        <div class="rating"><i class="bi bi-star-fill text-warning"></i> 4.7</div>
+        <img src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800">
+        <div class="dest-content">
+            <h3>Mount Fuji</h3>
+            <p><i class="bi bi-geo-alt"></i> Honshu, Japan</p>
+        </div>
+    </div>
+
+    <div class="dest-card" data-category="mountain" onclick="openModal('Dolomites', 'Stunning limestone peaks and lush green valleys in the Italian Alps.', 'https://images.unsplash.com/photo-1533105079780-92b9be482077?w=800')">
+        <div class="rating"><i class="bi bi-star-fill text-warning"></i> 4.9</div>
+        <img src="https://images.unsplash.com/photo-1533105079780-92b9be482077?w=800">
+        <div class="dest-content">
+            <h3>The Dolomites</h3>
+            <p><i class="bi bi-geo-alt"></i> Italy</p>
+        </div>
+    </div>
+
+    <div class="dest-card" data-category="urban" onclick="openModal('Tokyo', 'The ultimate urban experience with neon lights and deep-rooted traditions.', 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=800')">
+        <div class="rating"><i class="bi bi-star-fill text-warning"></i> 5.0</div>
+        <img src="https://images.unsplash.com/photo-1514565131-fce0801e5785?w=800">
+        <div class="dest-content">
+            <h3>Tokyo Neon</h3>
+            <p><i class="bi bi-geo-alt"></i> Shinjuku, Japan</p>
+        </div>
+    </div>
+
+    <div class="dest-card tall" data-category="urban" onclick="openModal('New York', 'The city that never sleeps, featuring iconic skyscrapers and Central Park.', 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=800')">
+        <div class="rating"><i class="bi bi-star-fill text-warning"></i> 4.6</div>
+        <img src="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=800">
+        <div class="dest-content">
+            <h3>Manhattan</h3>
+            <p><i class="bi bi-geo-alt"></i> New York, USA</p>
+        </div>
+    </div>
+
+    <div class="dest-card" data-category="urban" onclick="openModal('Paris', 'The city of love, fashion, and the iconic Eiffel Tower.', 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800')">
+        <div class="rating"><i class="bi bi-star-fill text-warning"></i> 4.8</div>
+        <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800">
+        <div class="dest-content">
+            <h3>Eiffel Tower</h3>
+            <p><i class="bi bi-geo-alt"></i> Paris, France</p>
+        </div>
+    </div>
+
+</main>
+
+<footer class="main-footer">
+    <div class="container footer-layout">
+        <div class="footer-col-brand">
+            <div class="footer-logo">
+                <i class="fa-solid fa-plane-up"></i>
+                <span>GLOBE TREKKER</span>
+            </div>
+            <p class="follow-text">Follow us on</p>
+            <div class="social-icons">
+                <a href="#"><i class="bi bi-facebook"></i></a>
+                <a href="#"><i class="bi bi-instagram"></i></a>
+                <a href="#"><i class="bi bi-twitter"></i></a>
+                <a href="#"><i class="bi bi-youtube"></i></a>
+                <a href="#"><i class="bi bi-pinterest"></i></a>
+            </div>
+        </div>
+        <div class="footer-col-links">
+            <h3>About us</h3>
+            <ul>
+                <li>About Global Trekker</li><li>Contact Us</li><li>Terms and Conditions</li><li>Privacy Policy</li>
+            </ul>
+        </div>
+        <div class="footer-col-links">
+            <h3>Travel Interest</h3>
+            <ul>
+                <li>Family Vacation</li><li>Honeymoon</li><li>Adventure</li><li>Wildlife and Nature</li>
+            </ul>
+        </div>
+        <div class="footer-col-links">
+            <h3>Top Destinations</h3>
+            <ul>
+                <li>Paris</li><li>Italy</li><li>London</li><li>New York City</li>
+            </ul>
+        </div>
+        <div class="footer-col-links">
+            <h3>Guidebook Shop</h3>
+            <ul>
+                <li>Destination Guide</li><li>Non-English Guides</li><li>Shopping Guides</li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <div class="container">
+            <p>Copyright © 2024 Global Trekker, designed by Tisha Saha. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+
+
+    <script>
+        function openModal(title, desc, img) {
+            document.getElementById('mTitle').innerText = title;
+            document.getElementById('mDesc').innerText = desc;
+            document.getElementById('mImg').src = img;
+            document.getElementById('destModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('destModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    // 1. FUNGSI FILTER KATEGORI
+    function filterCategory(category, button) {
+        // Ubah tampilan tombol aktif
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        // Filter kartu
+        const cards = document.querySelectorAll('.dest-card');
+        cards.forEach(card => {
+            const cardCat = card.getAttribute('data-category');
+            
+            // Animasi menghilang dulu sebelum disembunyikan
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                if (category === 'all' || cardCat === category) {
+                    card.style.display = 'block';
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'scale(1)';
+                    }, 50);
+                } else {
+                    card.style.display = 'none';
+                }
+            }, 300);
+        });
+    }
+
+    // 2. FUNGSI MODAL (DIPENCET KARTU)
+    function openModal(title, desc, img) {
+        document.getElementById('mTitle').innerText = title;
+        document.getElementById('mDesc').innerText = desc;
+        document.getElementById('mImg').src = img;
+        
+        const modal = document.getElementById('destModal');
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        document.getElementById('destModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    // 3. FUNGSI TOMBOL "CHECK AVAILABILITY" (BIAR KEREN)
+    function checkProcess(btn) {
+        const originalText = btn.innerText;
+        btn.innerText = "Searching flights...";
+        btn.style.opacity = "0.7";
+        btn.disabled = true;
+
+        setTimeout(() => {
+            btn.innerText = "Seats Available! Redirecting...";
+            btn.style.background = "#27ae60"; // Berubah jadi hijau
+            
+            setTimeout(() => {
+                alert("Taking you to the booking page for " + document.getElementById('mTitle').innerText + "!");
+                closeModal();
+                // Reset tombol
+                btn.innerText = originalText;
+                btn.style.background = "var(--primary)";
+                btn.style.opacity = "1";
+                btn.disabled = false;
+            }, 1500);
+        }, 2000);
+    }
+
+    function openLogin() {
+        document.getElementById('loginPopup').style.display = "flex";
+    }
+
+    function closeLogin() {
+        document.getElementById('loginPopup').style.display = "none";
+    }
+
+    // Fungsi simulasi saat tombol login ditekan
+    function handleLogin(event) {
+        event.preventDefault(); // Mencegah halaman reload
+        alert("Login berhasil! Selamat datang kembali.");
+        closeLogin();
+    }
+
+    // Menutup modal jika klik di area luar (background hitam)
+    window.onclick = function(event) {
+        const modal = document.getElementById('loginPopup');
+        if (event.target == modal) {
+            closeLogin();
+        }
+    }
+     // Fungsi untuk Modal Sign Up
+    function openSignUp() {
+        // Tutup modal login dulu kalau lagi terbuka
+        closeLogin();
+        document.getElementById('signupPopup').style.display = "flex";
+    }
+
+    function closeSignUp() {
+        document.getElementById('signupPopup').style.display = "none";
+    }
+
+    function handleSignUp(event) {
+        event.preventDefault();
+        alert("Pendaftaran berhasil! Silahkan login.");
+        closeSignUp();
+        openLogin(); // Arahkan user ke login setelah daftar
+    }
+
+    // Update window.onclick agar bisa menutup semua modal
+    window.onclick = function(event) {
+        const loginModal = document.getElementById('loginPopup');
+        const signupModal = document.getElementById('signupPopup');
+        const videoModal = document.getElementById('videoPopup');
+        
+        if (event.target == loginModal) closeLogin();
+        if (event.target == signupModal) closeSignUp();
+        if (event.target == videoModal) closeVideo();
+    }
+
+    // Fungsi untuk Forgot Password
+    function openForgot() {
+        closeLogin(); // Tutup modal login biar tidak tumpuk
+        document.getElementById('forgotPopup').style.display = "flex";
+    }
+
+    function closeForgot() {
+        document.getElementById('forgotPopup').style.display = "none";
+    }
+
+    function handleForgot(event) {
+        event.preventDefault();
+        alert("Link reset password telah dikirim ke email kamu!");
+        closeForgot();
+    }
+
+    // Update window.onclick agar mencakup semua modal baru
+    window.onclick = function(event) {
+        const loginModal = document.getElementById('loginPopup');
+        const signupModal = document.getElementById('signupPopup');
+        const forgotModal = document.getElementById('forgotPopup');
+        const videoModal = document.getElementById('videoPopup');
+        
+        if (event.target == loginModal) closeLogin();
+        if (event.target == signupModal) closeSignUp();
+        if (event.target == forgotModal) closeForgot();
+        if (event.target == videoModal) closeVideo();
+    }
+
+    function toggleSearch() {
+    const searchBox = document.querySelector('.search-box');
+    const searchInput = document.getElementById('searchInput');
+    
+    // Tambah/Hapus class active
+    searchBox.classList.toggle('active');
+    
+    // Jika aktif, otomatis fokus ke kotak ketik
+    if (searchBox.classList.contains('active')) {
+        searchInput.focus();
+    } else {
+        // Jika ditutup dan ada isinya, bisa jalankan fungsi cari
+        if(searchInput.value !== "") {
+            alert("Searching for: " + searchInput.value);
+            searchInput.value = ""; // Reset setelah cari
+        }
+    }
+}
+
+// Menutup search box jika klik di luar area search
+document.addEventListener('click', (e) => {
+    const searchBox = document.querySelector('.search-box');
+    if (!searchBox.contains(e.target)) {
+        searchBox.classList.remove('active');
+    }
+});
+    </script>
+
+</body>
+</html>
